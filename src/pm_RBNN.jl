@@ -1,6 +1,5 @@
 using Flux
 using Random
-using DSP
 using BangBang
 using Zygote
 
@@ -67,6 +66,7 @@ Base.@kwdef struct RayBasis2D{T1, T2, T3<:AbstractVector, T4, T5} <: DataDrivenP
             ϕ = rand(nrays) .* π
             trainable = push!!(trainable, ϕ)
         end
+
         if k === missing
             if env.soundspeed !== missing && env.frequency !== missing 
                 k = 2.0f0 * π * env.frequency / env.soundspeed

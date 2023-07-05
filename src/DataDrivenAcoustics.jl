@@ -2,6 +2,7 @@ module DataDrivenAcoustics
 
 using UnderwaterAcoustics
 using DocStringExtensions
+using DSP: amp2db, db2amp, pow2db, db2pow
 
 
 include("pm_RBNN.jl")

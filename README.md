@@ -199,8 +199,7 @@ This line of code automates the search and random initialization for trainable p
 To query field at an unvisited location, simply call the `transmissionloss` with trained RBNN model `datapm` and a location coordinate:
 ```julia
 julia> transmissionloss(datapm, nothing, AcousticReceiver(50.0, -10.0))
-1×1 Matrix{Float64}:
- 30.751382372838275
+ 30.47255541988299
 ```
 Note that source location is optional in transmission loss calculation for data driven propagation models.
 
@@ -222,30 +221,31 @@ You can ask for the significant arrivals[^1]:
 ```julia
 >julia arrivals(datapm, nothing, AcousticReceiver(50, -10))
 
-56-element Vector{RayArrival{Missing, ComplexF64}}:
-                         |          | -34.1 dB ϕ-117.7°
-                         |          | -34.4 dB ϕ 157.5°
-                         |          | -35.8 dB ϕ 159.3°
-                         |          | -36.6 dB ϕ -28.5°
-                         |          | -36.8 dB ϕ -57.8°
-                         |          | -37.1 dB ϕ -80.4°
+56-element Vector{DataDrivenAcoustics.RayArrival{Missing, ComplexF64}}:
+                         |          | -33.9 dB ϕ -68.6°
+                         |          | -34.3 dB ϕ-146.7°
+                         |          | -36.0 dB ϕ 155.4°
+                         |          | -36.4 dB ϕ -51.1°
+                         |          | -36.9 dB ϕ -29.0°
+                         |          | -37.0 dB ϕ -88.1°
  ⋮
-                         |          | -59.9 dB ϕ 153.1°
-                         |          | -59.9 dB ϕ 173.3°
-                         |          | -61.3 dB ϕ  48.5°
-                         |          | -62.5 dB ϕ -95.8°
-                         |          | -63.8 dB ϕ-102.2°
+                         |          | -60.6 dB ϕ 152.6°
+                         |          | -62.5 dB ϕ -88.7°
+                         |          | -62.5 dB ϕ  55.4°
+                         |          | -62.6 dB ϕ -57.2°
+                         |          | -62.7 dB ϕ-169.1°
 ```
 The empty columns represent information that is not provided by data-driven models.
 
 [^1]: Significant arrivals refers to arrivals with amplitudes no smaller than maximum arrival amplitude minus `threshold`. Threshold is a optional argument in `arrivals` and its default value is set to 30 dB.
 
 
-We can constrcut a Guassian process regression model for comparsion using `GPR` by given a kernal:
-```julia
-julia> kern = Mat(1/2, 0.0, 0.0);
-julia> gp = GPR(dataenv, kern; logObsNoise = -5.0, seed = true, ratioₜ = 1.0);
+We can constrcut a Guassian process regression model for comparsion using `GPR` by given a kernal. Do install `GaussianProcesses` if you want to use build-in kernels from GaussianProcesses,jl.
 
+```julia
+julia> using GaussianProcesses;
+julia> kern = Matern(1/2, 0.0, 0.0);
+julia> gp = GPR(dataenv, kern; logObsNoise = -5.0, seed = true, ratioₜ = 1.0);
 julia> let x = transmissionloss(gp, nothing, rx)
           plot(dataenv; receivers = rx, transmissionloss = x, clims=(-40,0), title = "Gaussian Processes")
           xlims!(0, 100)
@@ -270,3 +270,5 @@ Note that we use 100% of the data (500 measurements) as training data to train t
 - K. Li and M. Chitre, “Ocean acoustic propagation modeling using scientific machine learning,” in OCEANS: San Diego–Porto. IEEE, 2021, pp. 1–5.
 
 - K. Li and M. Chitre, “Physics-aided data-driven modal ocean acoustic propagation modeling,” in International Congress of Acoustics, 2022.
+
+

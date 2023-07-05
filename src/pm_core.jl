@@ -65,7 +65,7 @@ function ModelFit!(r::DataDrivenPropagationModel, inilearnrate, trainloss, datal
     rₜ, pₜ, rᵥ, pᵥ = SplitData(r.env.locations, r.env.measurements, ratioₜ, seed)
     bestmodel = deepcopy(Flux.params(r))
     count = 0
-    opt = ADAM(inilearnrate)
+    opt = Adam(inilearnrate)
     epoch = 0
     bestloss = dataloss(rᵥ, pᵥ, r)
     while true
@@ -74,7 +74,8 @@ function ModelFit!(r::DataDrivenPropagationModel, inilearnrate, trainloss, datal
         epoch += 1
         if tmploss < bestloss 
             bestloss = tmploss
-            bestmodel = deepcopy(Flux.params(r))
+            # bestmodel = deepcopy(Flux.params(r))
+            bestmodel = r
             count = 0
             showloss && (@show epoch, dataloss(rₜ, pₜ, r), dataloss(rᵥ, pᵥ, r))
         else
@@ -83,7 +84,8 @@ function ModelFit!(r::DataDrivenPropagationModel, inilearnrate, trainloss, datal
         epoch > maxepoch && break     
         if count > ncount
             count = 0
-            Flux.loadparams!(r, bestmodel)
+            # Flux.loadparams!(r, bestmodel)
+            Flux.loadmodel!(r, bestmodel)
             opt.eta /= reducedlearnrate
             opt.eta < minlearnrate && break 
             showloss && println("********* reduced learning rate: ",opt.eta, " *********" )     
