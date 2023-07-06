@@ -401,12 +401,12 @@ function RayBasis3DRCNNCal(r::RayBasis3DRCNN, xyz::AbstractArray; showarrivals =
     R = (abs2.(location(r.env.tx)[1] .- x) .+ abs2.(location(r.env.tx)[2] .- y)).^ 0.5f0
     upward = iseven.(j) 
     s1 = 2.0f0 .* upward .- 1.0f0 
-    n = div.(j, 2.0f0) 
+    n = div.(j, 2) 
     s = div.(n .+ upward, 2.0f0) 
     b = div.(n .+ (1 .- upward), 2.0f0) 
     s2 = 2.0f0 .* iseven.(n) .- 1.0f0 
     dz = 2.0f0 .* b .* r.env.waterdepth .+ s1 .*location(r.env.tx)[3] .- s1 .* s2 .* z
-    incidentangle = Float32.(abs.(atan.(R ./  dz)))
+    incidentangle = Float32.(abs.(atan.(R ./ dz)))
 
     surfaceloss = reflectioncoef(r.env.seasurface, r.env.frequency, incidentangle).^s
 
@@ -422,7 +422,7 @@ function RayBasis3DRCNNCal(r::RayBasis3DRCNN, xyz::AbstractArray; showarrivals =
         bufphase[i:i,:] = bufRCNN[2:2,:]
     end
 
-    totalphase =  r.k * l.+ copy(bufphase).* b
+    totalphase = r.k * l .+ copy(bufphase) .* b
     amp = 1.0f0 ./ l .* surfaceloss .* copy(bufRC).^ b .* absorption.(r.env.frequency, l, r.env.salinity)
     showarrivals == false ? (return sum(amp.* cis.(totalphase); dims=1)) : (return amp.* cis.(totalphase))
 end
