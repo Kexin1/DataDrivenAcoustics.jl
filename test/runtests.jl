@@ -130,13 +130,13 @@ pm = PekerisRayModel(env, 7)
 
 
 
-# Random.seed!(1)
-# txpos = [0.0, 0.0, -5.0]
-# rxpos = rand(3, 500) .* [100.0, 0.0, -20.0] .+ [1.0, 0.0, 0.0];
-# tloss = Array{Float32}(undef, 1, size(rxpos)[2])
-# for i in 1 : 1 : size(rxpos)[2]
-#     tloss[1, i] = Float32(transmissionloss(pm, AcousticSource(txpos[1], txpos[2], txpos[3], 1000.0), AcousticReceiver(rxpos[1,i], rxpos[2,i], rxpos[3,i]); mode=:coherent))
-# end
+Random.seed!(1)
+txpos = [0.0, 0.0, -5.0]
+rxpos = rand(3, 500) .* [100.0, 0.0, -20.0] .+ [1.0, 0.0, 0.0];
+tloss = Array{Float32}(undef, 1, size(rxpos)[2])
+for i in 1 : 1 : size(rxpos)[2]
+    tloss[1, i] = Float32(transmissionloss(pm, AcousticSource(txpos[1], txpos[2], txpos[3], 1000.0), AcousticReceiver(rxpos[1,i], rxpos[2,i], rxpos[3,i]); mode=:coherent))
+end
 
 # dataenv = DataDrivenUnderwaterEnvironment(rxpos, tloss; frequency = 1000.0, soundspeed = 1540.0, waterdepth = 20.0, tx = AcousticSource(0.0, 0.0, -5.0, 1000.0))
 # datapm = RayBasis3D(dataenv; inilearnrate = 0.005, seed  = true)
