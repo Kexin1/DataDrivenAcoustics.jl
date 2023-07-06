@@ -23,7 +23,7 @@ julia> models()
 
 ## Available models
 
-There are five formulations provided in current package:
+There are five data-driven models provided in current package:
 | Model | Description | Calculation function |
 |:-----|:---------|:---------|
 | `RayBasis2D` | 2D plane wave formulation. | `RayBasis2DCal` |
@@ -69,7 +69,7 @@ There are five formulations provided in current package:
 - `trainable`: trainable parameters (default: empty)
 
 
-`RayBasis3D` 3D spherical wave formulation. This formulation allow user to incorpate known channel geometry knowledge by inputting pre-calculated `θ`, `ψ` and `d`.
+`RayBasis3D` 3D spherical wave formulation. This formulation allow user to incorpate known channel geometry knowledge by inputting pre-calculated `θ`, `ψ` and `d`. To exclude the error terms in the trainable parameters, set `eθ`, `eψ`, and `ed` to zero if the input values of `θ`, `ψ`, and `d` are accurate.
 - `env`: data driven underwater environment
 - `calculatefield`: function to estimate acoustic field (default: `RayBasis3DCal`)
 - `nrays`: number of rays (default: 60)
@@ -85,8 +85,7 @@ There are five formulations provided in current package:
 - `trainable`: trainable parameters (default: empty)
 
 
-
-`RayBasis3DRCNN`: 3D spherical wave formulation with reflection coefficient neural network (RCNN) as part of the model. This formulation requires knowledge of channel geometry (water depth and source location) to precalculate nominal ray arrival directions, propagation distance and incident angles. This formulation currently only supports flat bathymetry.
+`RayBasis3DRCNN`: 3D spherical wave formulation with reflection coefficient neural network (RCNN) as part of the model. This formulation requires knowledge of channel geometry (water depth and source location) to precalculate nominal ray arrival directions, propagation distances and incident angles. This formulation currently only supports flat bathymetry.
 - `env`: data driven underwater environment
 - `RCNN`: neural network to model seabed reflection coefficient
 - `calculatefield`: function to estimate acoustic field (default: `RayBasis3DRCNNCal`)
@@ -98,7 +97,7 @@ There are five formulations provided in current package:
 - `trainable`: trainable parameters (default: empty)
 
 
-The four RBNN models have optional arguments pertaining to model training setups, in addition to the previously explained model parameters.
+These four physics-based data-driven propagation models have optional arguments pertaining to model training setups, in addition to the previously explained model parameters.
 - `ini_lr`: initial learning rate (default: 0.001)
 - `trainloss`: loss function used in training and model update (default: `rmseloss`)
 - `dataloss`: data loss function to calculate benchmarking validation error for early stopping (default: `rmseloss`)
@@ -140,7 +139,8 @@ julia> pm = PekerisRayModel(env,7);
 We assume an omnidirectional 1 kHz transmitter `tx` at a depth of 5 m at the origin. We sample modeled acoustic measurements `tloss` from `pm` at 500 random locations `rxpos` covering an 80 m x 20 m area of interest. Those 500 measurements are used to train our physics-based data-driven propagation model. We seed the random generator to allow reader replicate the following results[^1].
 [^1]: The presented results are obtained using Julia version 1.7.3.
 ```julia
-julia> Random.seed!(1)
+julia> using Random
+julia> Random.seed!(1);
 julia> tx = AcousticSource(0.0, -5.0, 1000.0);
 julia> rxpos = rand(2, 500) .* [80.0, -20.0] .+ [1.0, 0.0];
 julia> tloss = Array{Float32}(undef, 1, size(rxpos)[2]);
@@ -152,7 +152,7 @@ julia> for i in 1 : 1 : size(rxpos)[2]
 We plot measurement locations on top of ground truth field pattern. Note that the region from a range of 80 m to 100 m is the extended region where no measurement data are taken.
 
 ```julia
-julia> rx = AcousticReceiverGrid2D(1.0, 0.1, 1000, -20.0, 0.1, 200)
+julia> rx = AcousticReceiverGrid2D(1.0, 0.1, 1000, -20.0, 0.1, 200);
 
 julia> let x = transmissionloss(pm, tx, rx)
   plot(env; receivers = rx, transmissionloss = x, title = "Ground truth", clim = (-40,0))
@@ -240,7 +240,7 @@ The empty columns represent information that is not provided by data-driven mode
 [^2]: Significant arrivals refers to arrivals with amplitudes no smaller than maximum arrival amplitude minus `threshold`. Threshold is a optional argument in `arrivals` and its default value is set to 30 dB.
 
 
-We can constrcut a Guassian process regression model for comparsion using `GPR` by given a kernal. Do install `GaussianProcesses` if you want to use build-in kernels from GaussianProcesses,jl.
+For benchmarking, we constrcut a Guassian process regression model using `GPR` given a kernal. To take advantage of the kernels available in the `GaussianProcesses.jl` package, please ensure that you have installed it.
 
 ```julia
 julia> using GaussianProcesses;
@@ -253,11 +253,9 @@ julia> let x = transmissionloss(gp, nothing, rx)
       end
 ```
 ![](docs/images/GPR.png)
-The Gaussian process model can recover key strcuture with low fidelity, but fail to extrapolate beyond the measurement region.
+The Gaussian process model can recover key strcuture in field pattern with low fidelity, but fail to extrapolate beyond the measurement region.
 
-Note that we use 100% of the data (500 measurements) as training data to train the GPR model as `ratioₜ` in `GPR` is set to 1.0 by default. In contrast, our RBNN model is trained using 350 measurements, while the remaining 150 measurements serve as validation data for early stopping. The provided kernel and hyperparameters result in the best estimated field pattern (determined by eyeballing as we know the ground truth field pattern) among the various kernels and hyperparameters we tried for this specific example. If users lack prior information about the ground truth field pattern, they may need to allocate some validation data for hyperparameter tuning of the GPR model.
-
-
+Note that we utilize 100% of the data (500 measurements) as training data to train the GPR model, as the ratioₜ in GPR is set to 1.0 by default. Our RBNN model, on the other hand, is trained using 350 measurements, while the remaining 150 measurements are used as validation data for early stopping. The provided kernel and hyperparameters yield the best estimated field pattern (determined through visual inspection, as we know the ground truth field pattern) among the various kernels and hyperparameters we experimented with for this specific example. If users lack prior information about the ground truth field pattern, they should allocate some validation data for hyperparameter tuning of the GPR model.
 
 
 ## Publications
