@@ -121,8 +121,8 @@ function UnderwaterAcoustics.transfercoef(model::DataDrivenPropagationModel, tx:
         model.env.dB == true ? (return db2amp.(-p)) : (return p)
     else
         p = model.calculatefield(model, collect(location(rx)))[1]
-        return p
     end
+    return p
 end
 
 function UnderwaterAcoustics.transfercoef(model::DataDrivenPropagationModel, tx::Union{Missing, Nothing, AcousticSource}, rx::AcousticReceiverGrid2D; mode=:coherent) where {T1}
@@ -130,7 +130,7 @@ function UnderwaterAcoustics.transfercoef(model::DataDrivenPropagationModel, tx:
     if tx !== nothing &&  tx !== missing
         model.env.frequency == nominalfrequency(tx) || throw(ArgumentError("Mismatched frequencies in acoustic source and data driven environment"))
         if  model.env.tx !== missing   
-            location(model.env.tx) == location(tx) ||  throw(ArgumentError("Mismatched location in acoustic source and data driven environment"))
+            location(model.env.tx) == location(tx) || throw(ArgumentError("Mismatched location in acoustic source and data driven environment"))
         else
             @warn "Source location is ignored in field calculation"
         end

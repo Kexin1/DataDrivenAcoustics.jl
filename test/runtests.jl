@@ -18,11 +18,11 @@ function test2d(datapm)
     x = transfercoef(datapm, nothing, AcousticReceiverGrid2D(50.0, 0.0, 1, -5.0, -5.0, 3))
     @test x isa AbstractMatrix
     @test size(x) == (1, 3)
-    @test [x1 x2 x3] == x
+    @test [x1 x2 x3] == x 
     x = transfercoef(datapm, nothing, AcousticReceiverGrid2D(50.0, 10.0, 3, -5.0, -5.0, 3))
     @test x isa AbstractMatrix
     @test size(x) == (3, 3)
-    @test [x1, x2, x3] == x[1,:]
+    @test [x1, x2, x3] == x[1,:] 
 
     x1 = transmissionloss(datapm, nothing, AcousticReceiver(50.0, -5.0))
     x2 = transmissionloss(datapm, nothing, AcousticReceiver(50.0, -10.0))
@@ -61,6 +61,9 @@ function test3d(datapm)
     @test size(x) == (3, 2, 3)
     @test [x1, x2, x3] == x[1, 1,:]
 
+    @show [x1, x2, x3] 
+    @show x[1, 1,:]
+
 
     x1 = transmissionloss(datapm, nothing, AcousticReceiver(50.0, 0.0,  -5.0))
     x2 = transmissionloss(datapm, nothing, AcousticReceiver(50.0, 0.0, -10.0))
@@ -86,24 +89,24 @@ end
 @test GPR in models()
 
 
-env = UnderwaterEnvironment()
-pm = PekerisRayModel(env, 7)
+# env = UnderwaterEnvironment()
+# pm = PekerisRayModel(env, 7)
 
-Random.seed!(1)
+# Random.seed!(1)
 
-txpos = [0.0, -5.0]
-rxpos = rand(2, 500) .* [80.0, -20.0] .+ [1.0, 0.0]
-tloss = Array{Float32}(undef, 1, size(rxpos)[2])
-for i in 1 : 1 : size(rxpos)[2]
-    tloss[1, i] = Float32(transmissionloss(pm, AcousticSource(txpos[1], txpos[2], 1000.0), AcousticReceiver(rxpos[1,i], rxpos[2,i]); mode=:coherent))
-end
-dataenv = DataDrivenUnderwaterEnvironment(rxpos, tloss; frequency = 1000.0, soundspeed = 1540.0);
+# txpos = [0.0, -5.0]
+# rxpos = rand(2, 500) .* [80.0, -20.0] .+ [1.0, 0.0]
+# tloss = Array{Float32}(undef, 1, size(rxpos)[2])
+# for i in 1 : 1 : size(rxpos)[2]
+#     tloss[1, i] = Float32(transmissionloss(pm, AcousticSource(txpos[1], txpos[2], 1000.0), AcousticReceiver(rxpos[1,i], rxpos[2,i]); mode=:coherent))
+# end
+# dataenv = DataDrivenUnderwaterEnvironment(rxpos, tloss; frequency = 1000.0, soundspeed = 1540.0);
 
-datapm = RayBasis2D(dataenv; inilearnrate = 0.005, seed = true)
-@test datapm isa RayBasis2D
-test2d(datapm)
-arr = arrivals(datapm, nothing, AcousticReceiver(50.0, -10.0))
-@test arr isa AbstractVector{<:DataDrivenAcoustics.RayArrival}
+# datapm = RayBasis2D(dataenv; inilearnrate = 0.005, seed = true)
+# @test datapm isa RayBasis2D
+# test2d(datapm)
+# arr = arrivals(datapm, nothing, AcousticReceiver(50.0, -10.0))
+# @test arr isa AbstractVector{<:DataDrivenAcoustics.RayArrival}
 
 
 # datapm = RayBasis2DCurv(dataenv; inilearnrate = 0.005, seed = true)
@@ -120,20 +123,20 @@ arr = arrivals(datapm, nothing, AcousticReceiver(50.0, -10.0))
 
 
 
-# Random.seed!(1)
-# txpos = [0.0, 0.0, -5.0]
-# rxpos = rand(3, 500) .* [100.0, 0.0, -20.0] .+ [1.0, 0.0, 0.0];
-# tloss = Array{Float32}(undef, 1, size(rxpos)[2])
-# for i in 1 : 1 : size(rxpos)[2]
-#     tloss[1, i] = Float32(transmissionloss(pm, AcousticSource(txpos[1], txpos[2], txpos[3], 1000.0), AcousticReceiver(rxpos[1,i], rxpos[2,i], rxpos[3,i]); mode=:coherent))
-# end
+Random.seed!(1)
+txpos = [0.0, 0.0, -5.0]
+rxpos = rand(3, 500) .* [100.0, 0.0, -20.0] .+ [1.0, 0.0, 0.0];
+tloss = Array{Float32}(undef, 1, size(rxpos)[2])
+for i in 1 : 1 : size(rxpos)[2]
+    tloss[1, i] = Float32(transmissionloss(pm, AcousticSource(txpos[1], txpos[2], txpos[3], 1000.0), AcousticReceiver(rxpos[1,i], rxpos[2,i], rxpos[3,i]); mode=:coherent))
+end
 
-# dataenv = DataDrivenUnderwaterEnvironment(rxpos, tloss; frequency = 1000.0, soundspeed = 1540.0);
-# datapm = RayBasis3D(dataenv; inilearnrate = 0.005, seed  = true)
-# @test datapm isa RayBasis3D
-# test3d(datapm)
-# arr = arrivals(datapm, nothing, AcousticReceiver(50.0, 0.0, -10.0))
-# @test arr isa AbstractVector{<:DataDrivenAcoustics.RayArrival}
+dataenv = DataDrivenUnderwaterEnvironment(rxpos, tloss; frequency = 1000.0, soundspeed = 1540.0);
+datapm = RayBasis3D(dataenv; inilearnrate = 0.005, seed  = true)
+@test datapm isa RayBasis3D
+test3d(datapm)
+arr = arrivals(datapm, nothing, AcousticReceiver(50.0, 0.0, -10.0))
+@test arr isa AbstractVector{<:DataDrivenAcoustics.RayArrival}
 
 
 
