@@ -98,34 +98,34 @@ end
 env = UnderwaterEnvironment()
 pm = PekerisRayModel(env, 7)
 
-# Random.seed!(1)
+Random.seed!(1)
 
-# txpos = [0.0, -5.0]
-# rxpos = rand(2, 500) .* [80.0, -20.0] .+ [1.0, 0.0]
-# tloss = Array{Float32}(undef, 1, size(rxpos)[2])
-# for i in 1 : 1 : size(rxpos)[2]
-#     tloss[1, i] = Float32(transmissionloss(pm, AcousticSource(txpos[1], txpos[2], 1000.0), AcousticReceiver(rxpos[1,i], rxpos[2,i]); mode=:coherent))
-# end
-# dataenv = DataDrivenUnderwaterEnvironment(rxpos, tloss; frequency = 1000.0, soundspeed = 1540.0);
+txpos = [0.0, -5.0]
+rxpos = rand(2, 500) .* [80.0, -20.0] .+ [1.0, 0.0]
+tloss = Array{Float32}(undef, 1, size(rxpos)[2])
+for i in 1 : 1 : size(rxpos)[2]
+    tloss[1, i] = Float32(transmissionloss(pm, AcousticSource(txpos[1], txpos[2], 1000.0), AcousticReceiver(rxpos[1,i], rxpos[2,i]); mode=:coherent))
+end
+dataenv = DataDrivenUnderwaterEnvironment(rxpos, tloss; frequency = 1000.0, soundspeed = 1540.0);
 
-# datapm = RayBasis2D(dataenv; inilearnrate = 0.005, seed = true)
-# @test datapm isa RayBasis2D
-# test2d(datapm)
-# arr = arrivals(datapm, nothing, AcousticReceiver(50.0, -10.0))
-# @test arr isa AbstractVector{<:DataDrivenAcoustics.RayArrival}
-
-
-# datapm = RayBasis2DCurv(dataenv; inilearnrate = 0.005, seed = true)
-# @test datapm isa RayBasis2DCurv
-# test2d(datapm)
-# arr = arrivals(datapm, nothing, AcousticReceiver(50.0, -10.0))
-# @test arr isa AbstractVector{<:DataDrivenAcoustics.RayArrival}
+datapm = RayBasis2D(dataenv; inilearnrate = 0.005, seed = true)
+@test datapm isa RayBasis2D
+test2d(datapm)
+arr = arrivals(datapm, nothing, AcousticReceiver(50.0, -10.0))
+@test arr isa AbstractVector{<:DataDrivenAcoustics.RayArrival}
 
 
-# kern = Matern(1/2, 0.0, 0.0)
-# datapm = GPR(dataenv, kern; logObsNoise = -5.0, seed = true, ratioₜ = 1.0)
-# @test datapm isa GPR
-# test2d(datapm)
+datapm = RayBasis2DCurv(dataenv; inilearnrate = 0.005, seed = true)
+@test datapm isa RayBasis2DCurv
+test2d(datapm)
+arr = arrivals(datapm, nothing, AcousticReceiver(50.0, -10.0))
+@test arr isa AbstractVector{<:DataDrivenAcoustics.RayArrival}
+
+
+kern = Matern(1/2, 0.0, 0.0)
+datapm = GPR(dataenv, kern; logObsNoise = -5.0, seed = true, ratioₜ = 1.0)
+@test datapm isa GPR
+test2d(datapm)
 
 
 
@@ -137,12 +137,12 @@ for i in 1 : 1 : size(rxpos)[2]
     tloss[1, i] = Float32(transmissionloss(pm, AcousticSource(txpos[1], txpos[2], txpos[3], 1000.0), AcousticReceiver(rxpos[1,i], rxpos[2,i], rxpos[3,i]); mode=:coherent))
 end
 
-# dataenv = DataDrivenUnderwaterEnvironment(rxpos, tloss; frequency = 1000.0, soundspeed = 1540.0, waterdepth = 20.0, tx = AcousticSource(0.0, 0.0, -5.0, 1000.0))
-# datapm = RayBasis3D(dataenv; inilearnrate = 0.005, seed  = true)
-# @test datapm isa RayBasis3D
-# test3d(datapm)
-# arr = arrivals(datapm, nothing, AcousticReceiver(50.0, 0.0, -10.0))
-# @test arr isa AbstractVector{<:DataDrivenAcoustics.RayArrival}
+dataenv = DataDrivenUnderwaterEnvironment(rxpos, tloss; frequency = 1000.0, soundspeed = 1540.0, waterdepth = 20.0, tx = AcousticSource(0.0, 0.0, -5.0, 1000.0))
+datapm = RayBasis3D(dataenv; inilearnrate = 0.005, seed  = true)
+@test datapm isa RayBasis3D
+test3d(datapm)
+arr = arrivals(datapm, nothing, AcousticReceiver(50.0, 0.0, -10.0))
+@test arr isa AbstractVector{<:DataDrivenAcoustics.RayArrival}
 
 
 
@@ -162,9 +162,9 @@ arr = arrivals(datapm, nothing, AcousticReceiver(50.0, 0.0, -10.0))
 @test arr isa AbstractVector{<:DataDrivenAcoustics.RayArrival}
 
 
-# kern = Matern(1/2, [0.0, 0.0, 0.0], 0.0)
-# datapm = GPR(dataenv, kern; logObsNoise = -5.0, seed = true, ratioₜ = 1.0)
-# @test datapm isa GPR
-# test3d(datapm)
+kern = Matern(1/2, [0.0, 0.0, 0.0], 0.0)
+datapm = GPR(dataenv, kern; logObsNoise = -5.0, seed = true, ratioₜ = 1.0)
+@test datapm isa GPR
+test3d(datapm)
 
 
