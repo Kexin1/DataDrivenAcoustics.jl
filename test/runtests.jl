@@ -89,8 +89,8 @@ end
 @test GPR in models()
 
 
-# env = UnderwaterEnvironment()
-# pm = PekerisRayModel(env, 7)
+env = UnderwaterEnvironment()
+pm = PekerisRayModel(env, 7)
 
 # Random.seed!(1)
 
