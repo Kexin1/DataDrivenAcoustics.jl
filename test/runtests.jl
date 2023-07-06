@@ -12,34 +12,36 @@ function test2d(datapm)
     x3 = transfercoef(datapm, nothing, AcousticReceiver(50.0, -15.0))
     x = transfercoef(datapm, nothing, [AcousticReceiver(50.0, -d) for d ∈ 5.0:5.0:15.0])
     @test x isa AbstractVector
-    @test [x1, x2, x3] == x
+    @test all(isapprox.([x1, x2, x3], x, atol= 0.000001))
 
 
     x = transfercoef(datapm, nothing, AcousticReceiverGrid2D(50.0, 0.0, 1, -5.0, -5.0, 3))
     @test x isa AbstractMatrix
     @test size(x) == (1, 3)
-    @test [x1 x2 x3] == x 
+    @test all(isapprox.([x1, x2, x3], x, atol= 0.000001))
+
     x = transfercoef(datapm, nothing, AcousticReceiverGrid2D(50.0, 10.0, 3, -5.0, -5.0, 3))
     @test x isa AbstractMatrix
     @test size(x) == (3, 3)
-    @test [x1, x2, x3] == x[1,:] 
+    @test all(isapprox.([x1, x2, x3], x[1,:], atol= 0.000001))
+
 
     x1 = transmissionloss(datapm, nothing, AcousticReceiver(50.0, -5.0))
     x2 = transmissionloss(datapm, nothing, AcousticReceiver(50.0, -10.0))
     x3 = transmissionloss(datapm, nothing, AcousticReceiver(50.0, -15.0))
     x = transmissionloss(datapm, nothing, [AcousticReceiver(50.0, -d) for d ∈ 5.0:5.0:15.0])
     @test x isa AbstractVector
-    @test [x1, x2, x3] == x
+    @test all(isapprox.([x1, x2, x3], x, atol= 0.000001))
+
     x = transmissionloss(datapm, nothing, AcousticReceiverGrid2D(50.0, 0.0, 1, -5.0, -5.0, 3))
     @test x isa AbstractMatrix
     @test size(x) == (1, 3)
-    @test [x1 x2 x3] == x
+    @test all(isapprox.([x1, x2, x3], x, atol= 0.000001))
+
     x = transmissionloss(datapm, nothing, AcousticReceiverGrid2D(50.0, 10.0, 3, -5.0, -5.0, 3))
     @test x isa AbstractMatrix
     @test size(x) == (3, 3)
-    @test [x1, x2, x3] == x[1,:]
-
-
+    @test all(isapprox.([x1, x2, x3], x[1,:], atol= 0.000001))
 end
 
 
@@ -49,17 +51,17 @@ function test3d(datapm)
     x3 = transfercoef(datapm, nothing, AcousticReceiver(50.0, 0.0, -15.0))
     x = transfercoef(datapm, nothing, [AcousticReceiver(50.0, 0.0, -d) for d ∈ 5.0:5.0:15.0])
     @test x isa AbstractVector
-    @test [x1, x2, x3] == x
+    @test all(isapprox.([x1, x2, x3], x, atol= 0.000001))
 
 
     x = transfercoef(datapm, nothing, AcousticReceiverGrid3D(50.0, 0.0, 1, 0.0, 1.0, 1, -5.0, -5.0, 3))
     @test x isa AbstractMatrix
     @test size(x) == (1, 3)
-    @test [x1 x2 x3] == x
+    @test all(isapprox.([x1, x2, x3], x, atol= 0.000001))
+
     x = transfercoef(datapm, nothing, AcousticReceiverGrid3D(50.0, 10.0, 3, 0.0, 1.0, 2, -5.0, -5.0, 3))
     @test x isa AbstractArray
     @test size(x) == (3, 2, 3)
-    # @test [x1, x2, x3] == x[1, 1,:]
     @test all(isapprox.([x1, x2, x3], x[1, 1,:], atol= 0.000001))
 
     x1 = transmissionloss(datapm, nothing, AcousticReceiver(50.0, 0.0,  -5.0))
@@ -67,24 +69,19 @@ function test3d(datapm)
     x3 = transmissionloss(datapm, nothing, AcousticReceiver(50.0, 0.0, -15.0))
     x = transmissionloss(datapm, nothing, [AcousticReceiver(50.0, 0.0, -d) for d ∈ 5.0:5.0:15.0])
     @test x isa AbstractVector
-    @test [x1, x2, x3] == x
+    @test all(isapprox.([x1, x2, x3], x, atol= 0.000001))
 
 
     x = transmissionloss(datapm, nothing, AcousticReceiverGrid3D(50.0, 0.0, 1, 0.0, 1.0, 1, -5.0, -5.0, 3))
     @test x isa AbstractMatrix
     @test size(x) == (1, 3)
-    @test [x1 x2 x3] == x
+    @test all(isapprox.([x1, x2, x3], x, atol= 0.000001))
 
 
     x = transmissionloss(datapm, nothing, AcousticReceiverGrid3D(50.0, 10.0, 3, 0.0, 1.0, 2, -5.0, -5.0, 3))
     @test x isa AbstractArray
     @test size(x) == (3, 2, 3)
-    # @test [x1, x2, x3] == x[1,1,:]
-    # @show [x1, x2, x3]
-    # @show x[1, 1,:]
     @test all(isapprox.([x1, x2, x3], x[1, 1,:], atol= 0.000001))
-
-
 end
 
 

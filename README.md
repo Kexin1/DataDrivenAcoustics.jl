@@ -137,8 +137,8 @@ julia> env = UnderwaterEnvironment();
 julia> pm = PekerisRayModel(env,7);
 ```
 
-We assume an omnidirectional 1 kHz transmitter `tx` at a depth of 5 m at the origin. We sample modeled acoustic measurements `tloss` from `pm` at 500 random locations `rxpos` covering an 80 m x 20 m area of interest. Those 500 measurements are used to train our physics-based data-driven propagation model. We seed the random generator to allow reader replicate the following results.
-
+We assume an omnidirectional 1 kHz transmitter `tx` at a depth of 5 m at the origin. We sample modeled acoustic measurements `tloss` from `pm` at 500 random locations `rxpos` covering an 80 m x 20 m area of interest. Those 500 measurements are used to train our physics-based data-driven propagation model. We seed the random generator to allow reader replicate the following results[^1].
+[^1]: The presented results are obtained using Julia version 1.7.3.
 ```julia
 julia> Random.seed!(1)
 julia> tx = AcousticSource(0.0, -5.0, 1000.0);
@@ -217,7 +217,7 @@ Our proposed physics-based data-driven propagation modeling technique has the ca
 
 
 
-You can ask for the significant arrivals[^1]:
+You can ask for the significant arrivals[^2]:
 ```julia
 >julia arrivals(datapm, nothing, AcousticReceiver(50, -10))
 
@@ -237,7 +237,7 @@ You can ask for the significant arrivals[^1]:
 ```
 The empty columns represent information that is not provided by data-driven models.
 
-[^1]: Significant arrivals refers to arrivals with amplitudes no smaller than maximum arrival amplitude minus `threshold`. Threshold is a optional argument in `arrivals` and its default value is set to 30 dB.
+[^2]: Significant arrivals refers to arrivals with amplitudes no smaller than maximum arrival amplitude minus `threshold`. Threshold is a optional argument in `arrivals` and its default value is set to 30 dB.
 
 
 We can constrcut a Guassian process regression model for comparsion using `GPR` by given a kernal. Do install `GaussianProcesses` if you want to use build-in kernels from GaussianProcesses,jl.
